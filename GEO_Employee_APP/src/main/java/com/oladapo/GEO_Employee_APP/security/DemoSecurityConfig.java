@@ -15,11 +15,21 @@ import javax.sql.DataSource;
 @Configuration
 public class DemoSecurityConfig {
 
-// add support for JDBC.... no more hardcodede users
+// add support for JDBC.... no more hardcoded users
 
     @Bean
-    public UserDetailsManager userDetailsManager(DataSource dataSource){
-        return  new JdbcUserDetailsManager(dataSource);
+    public UserDetailsManager userDetailsManager(DataSource dataSource) {
+
+        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
+
+        // define query to retrieve a user by username
+
+        jdbcUserDetailsManager.setUsersByUsernameQuery("select user_id, pw, active from members where user_id=?");
+
+        // define query to retrieve the authorities/roles by username
+        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select user_id, roles from role where user_id=?");
+
+        return jdbcUserDetailsManager;
     }
 
 
@@ -43,7 +53,7 @@ public class DemoSecurityConfig {
         return http.build();
     }
 
-        /*
+        /**
     @Bean
     public InMemoryUserDetailsManager userDetailsManager() {
 
